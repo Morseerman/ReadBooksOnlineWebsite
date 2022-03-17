@@ -11,14 +11,14 @@ import Register from "./components/Register/Register";
 import Home from "./components/Home/Home";
 import Profile from "./components/Profile/Profile";
 import BoardUser from "./components/BoardUser/BoardUser";
-import BoardModerator from "./components/BoardModerator/BoardModerator";
+import BoardEmployee from "./components/BoardEmployee/BoardEmployee";
 import BoardAdmin from "./components/BoardAdmin/BoardAdmin";
 
 // import AuthVerify from "./common/AuthVerify";
 import EventBus from "./common/EventBus";
 
 const App = (props) => {  
-  const [showModeratorBoard, setShowModeratorBoard] = useState(false);
+  const [showEmployeeBoard, setShowEmployeeBoard] = useState(false);
   const [showAdminBoard, setShowAdminBoard] = useState(false);
   const [currentUser, setCurrentUser] = useState(undefined);
 
@@ -27,7 +27,7 @@ const App = (props) => {
 
     if (user) {
       setCurrentUser(user);
-      setShowModeratorBoard(user.roles.includes("ROLE_MODERATOR"));
+      setShowEmployeeBoard(user.roles.includes("ROLE_EMPLOYEE"));
       setShowAdminBoard(user.roles.includes("ROLE_ADMIN"));
     }
 
@@ -42,7 +42,7 @@ const App = (props) => {
 
   const logOut = () => {
     AuthService.logout();
-    setShowModeratorBoard(false);
+    setShowEmployeeBoard(false);
     setShowAdminBoard(false);
     setCurrentUser(undefined);
   };
@@ -63,12 +63,12 @@ const App = (props) => {
             </Link>
           </li>
 
-          {showModeratorBoard && (
+          {showEmployeeBoard && (
             <li className="nav-item">
               <Link to={"/mod"} className="nav-link">
                 <FormattedMessage
-                  id="navbar.moderator"
-                  defaultMessage="Moderator"
+                  id="navbar.employee"
+                  defaultMessage="Employee"
                 />
               </Link>
             </li>
@@ -128,7 +128,7 @@ const App = (props) => {
           <Route exact path="/register" component={Register} />
           <Route exact path="/profile" component={Profile} />
           <Route path="/user" component={BoardUser} />
-          <Route path="/mod" component={BoardModerator} />
+          <Route path="/mod" component={BoardEmployee} />
           <Route path="/admin" component={BoardAdmin} />
         </Switch>
       </div>
