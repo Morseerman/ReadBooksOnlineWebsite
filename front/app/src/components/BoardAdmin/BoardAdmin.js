@@ -3,24 +3,25 @@ import { Link, Redirect } from "react-router-dom";
 import UserService from "../../services/user.service";
 import EventBus from "../../common/EventBus";
 import AuthService from "../../services/auth.service";
-import BillService from "../../services/BillService";
+import BookRequestService from "../../services/BookRequestService";
 import { Button } from "bootstrap";
 import { FormattedMessage } from "react-intl";
 import ExistingUserService from "../../services/existing-user.service";
 
 const BoardAdmin = () => {
+  const [inputName, setInputName] = useState('') 
   const currentUser = AuthService.getCurrentUser();
   const [content, setContent] = useState("");
-  const [bills, setBills] = useState([]);
+  const [bookrequests, setBookRequests] = useState([]);
   const [users, setUsers] = useState([]);
-  const [currentBill, setCurrentBill] = useState(null);
-  // const [billStatus, setCurrentBillStatus] = useState("");
+  const [currentBookRequest, setCurrentBookRequest] = useState(null);
+  // const [bookrequestStatus, setCurrentBookRequestStatus] = useState("");
   //test
 
   useEffect(() => {
     UserService.getAdminBoard().then(
       (response) => {
-        setContent("Bills");
+        setContent("BookRequests");
       },
       (error) => {
         const _content =
@@ -36,15 +37,15 @@ const BoardAdmin = () => {
         }
       }
     );
-    retrieveBills();
+    retrieveBookRequests();
     retrieveUsers();
-    mapBills();
+    mapBookRequests();
   }, [content]);
 
-  const retrieveBills = async () => {
-    await BillService.getAll().then((response) => {
+  const retrieveBookRequests = async () => {
+    await BookRequestService.getAll().then((response) => {
       const arr = Object.entries(response.data);
-      setBills(arr);
+      setBookRequests(arr);
     });
   };
 
@@ -55,24 +56,27 @@ const BoardAdmin = () => {
     });
   };
 
-  const mapBills = () => {
-    bills > 0 && bills.map((bill, index) => {});
+  const mapBookRequests = () => {
+    bookrequests > 0 && bookrequests.map((bookrequest, index) => {});
   };
 
-  const retrieveBillNo = (bill) => {
-    return bill.no;
+  const retrieveBookRequestTitle = (bookrequest) => {
+  
+    return bookrequest.title;
   };
 
-  const retrieveBillDate = (bill) => {
-    return bill.date;
+  const retrieveBookRequestAuthor = (bookrequest) => {
+    
+    return bookrequest.author;
   };
 
-  const retrieveBillType = (bill) => {
-    return bill.type;
+  const retrieveBookRequestDate = (bookrequest) => {
+    
+    return bookrequest.date;
   };
 
-  const retrieveBillAmount = (bill) => {
-    return "£" + bill.amount;
+  const retrieveBookRequestAmount = (bookrequest) => {
+    return "£" + bookrequest.amount;
   };
 
   // const getUserName = (userId) => {
@@ -81,40 +85,45 @@ const BoardAdmin = () => {
   //   });
   // };
 
-  // const retrieveBillUser = (bill) => {
-  //   // console.log(bill.user);
+  // const retrieveBookRequestUser = (bookrequest) => {
+  //   // console.log(bookrequest.user);
   //   // let user;
-  //   // ExistingUserService.getByUserId(bill.user[0]).then((res) => {
+  //   // ExistingUserService.getByUserId(bookrequest.user[0]).then((res) => {
   //   //   console.log(res.data.username);
   //   //   return res.data.username;
   //   // });
 
-  //   return getUserName(bill.user[0]);
+  //   return getUserName(bookrequest.user[0]);
   // };
 
-  const retrieveUserName = (bill) => {
+  const retrieveUserName = (bookrequest) => {
     for (const user of users) {
-      console.log("bills user id: " + bill.user[0]);
+      console.log("bookrequests user id: " + bookrequest.user[0]);
       console.log("users id: " + user[1]._id);
-      if (bill.user[0] === user[1]._id) {
+      if (bookrequest.user[0] === user[1]._id) {
         return user[1].username;
       } else {
       }
     }
   };
 
-  const retrieveBillIsPaid = (bill) => {
-    const boolVal = bill.isPaid;
+  const retrieveBookRequestIsPaid = (bookrequest) => {
+    const boolVal = bookrequest.isPaid;
     if (boolVal) {
       return (
-        <FormattedMessage id="boardUser.paidStatus" defaultMessage="Paid" />
+        <FormattedMessage id="boardUser.paidStatus" defaultMessage="Complete" />
       );
     } else {
       return (
-        <FormattedMessage
-          id="boardUser.unPaidStatus"
-          defaultMessage="Waiting for Payment"
-        />
+        <>
+          <FormattedMessage
+            id="boardUser.unPaidStatus"
+            defaultMessage="Pending"
+          />
+          <button className="btn btn-success" onClick={() => handleBookRequest(bookrequest)}>
+          <FormattedMessage id="boardUser.payButton" defaultMessage="Handle" />
+         </button>
+        </>
       );
     }
   };
@@ -139,10 +148,19 @@ const BoardAdmin = () => {
   //   }
   // };
 
-  const canPay = (bill) => {
-    if (!bill.isPaid) {
+  const inputtingName = (e) => {
+    setInputName(e.target.value)
+  }
+
+  const createEmplyoyeeRequest = async () =>{  
+    await ExistingUserService.update(inputName, ["6230d5c652f73df0f3b21ed0"]).then((response) => {
+      setContent("1");
+    });
+  }
+  const canPay = (bookrequest) => {
+    if (!bookrequest.isPaid) {
       return (
-        <button className="btn btn-success" onClick={() => payBill(bill)}>
+        <button className="btn btn-success" onClick={() => handleBookRequest(bookrequest)}>
           <FormattedMessage id="boardUser.payButton" defaultMessage="Pay" />
         </button>
       );
@@ -150,48 +168,49 @@ const BoardAdmin = () => {
     }
   };
 
-  const payBill = async (bill) => {
-    bill.isPaid = true;
-    await BillService.update(bill._id, bill).then((response) => {
+  const handleBookRequest = async (bookrequest) => { 
+
+    bookrequest.isPaid = true;
+    await BookRequestService.update(bookrequest._id, bookrequest).then((response) => {
       setContent("1");
     });
   };
 
-  // const retrieveUser = (bill) => {
-  //   ExistingUserService.getByUserId(bill.user[0]).then((response) => {
+  // const retrieveUser = (bookrequest) => {
+  //   ExistingUserService.getByUserId(bookrequest.user[0]).then((response) => {
   //     return response.user.username;
   //   });
   // };
 
-  // const retrieveUserBill = (bill) => {
-  //   // console.log(bill.user[0]);
-  //   // await ExistingUserService.getByUserId(bill.user[0])
+  // const retrieveUserBookRequest = (bookrequest) => {
+  //   // console.log(bookrequest.user[0]);
+  //   // await ExistingUserService.getByUserId(bookrequest.user[0])
   //   //   .then((res) => {
   //   //     // console.log(res.user.username);
   //   //   })
   //   //   .catch((err) => {
   //   //     console.log(err);
   //   //   });
-  //   const user = retrieveUser(bill);
+  //   const user = retrieveUser(bookrequest);
   //   return user.username;
   // };
 
-  const renderBills = () => {
-    return bills.map((bill) => (
+  const renderBookRequests = () => {
+    return bookrequests.map((bookrequest) => (
       <tr>
-        <th scope="row">{retrieveBillNo(bill[1])}</th>
-        <td>{retrieveBillDate(bill[1])}</td>
-        <td>{retrieveBillType(bill[1])}</td>
-        <td>{retrieveBillAmount(bill[1])}</td>
-        <td>{retrieveBillIsPaid(bill[1])}</td>
-        <td>{retrieveUserName(bill[1])}</td>
+        <th scope="row">{retrieveBookRequestTitle(bookrequest[1])}</th>
+        <td>{retrieveBookRequestAuthor(bookrequest[1])}</td>
+        <td>{retrieveBookRequestDate(bookrequest[1])}</td>
+        <td>{retrieveBookRequestAmount(bookrequest[1])}</td>
+        <td>{retrieveBookRequestIsPaid(bookrequest[1])}</td>
+        <td>{retrieveUserName(bookrequest[1])}</td>
       </tr>
     ));
   };
 
-  const retrieveUserBill = async (bill) => {
-    console.log(bill.user[0]);
-    await ExistingUserService.getByUserId(bill.user[0]).then((res) => {
+  const retrieveUserBookRequest = async (bookrequest) => {
+    console.log(bookrequest.user[0]);
+    await ExistingUserService.getByUserId(bookrequest.user[0]).then((res) => {
       return res.data.username;
       console.log(res.data.username);
     });
@@ -200,7 +219,7 @@ const BoardAdmin = () => {
   // return (
   //   <div>
   //     {currnetUser ? (
-  //       <h1>Bills</h1>
+  //       <h1>BookRequests</h1>
   //       <table className="table">
   //         <thead>
   //           <tr>
@@ -211,7 +230,7 @@ const BoardAdmin = () => {
   //             <th scope="col">Status</th>
   //           </tr>
   //         </thead>
-  //         <tbody>{renderBills()}</tbody>
+  //         <tbody>{renderBookRequests()}</tbody>
   //       </table>
   //     )}
 
@@ -225,7 +244,7 @@ const BoardAdmin = () => {
       {currentUser ? (
         <div>
           <h1>
-            <FormattedMessage id="boardUser.title" defaultMessage="Bills" />
+            <FormattedMessage id="boardUser.title" defaultMessage="BookRequests" />
           </h1>
           <table className="table">
             <thead>
@@ -268,8 +287,15 @@ const BoardAdmin = () => {
                 </th>
               </tr>
             </thead>
-            <tbody>{renderBills()}</tbody>
+            <tbody>{renderBookRequests()}</tbody>
           </table>
+          <button className="btn btn-success" onClick={createEmplyoyeeRequest}>Create Employee</button>
+          <h3>UserName</h3>
+          <input 
+         value={inputName}
+         onChange={inputtingName}            
+        />
+         
         </div>
       ) : (
         <Redirect to="/login" />

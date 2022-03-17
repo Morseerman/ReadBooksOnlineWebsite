@@ -40,22 +40,27 @@ exports.update = (req, res) => {
     return res.status(400).send({
       message: "Data to update can not be empty!",
     });
+ 
   }
-
+ 
   const id = req.params.id;
-
-  User.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
-    .then((data) => {
+  console.log(id)
+  User.findOneAndUpdate({username: id}, {roles:["6230d5c652f73df0f3b21ed0"] } )
+    .then((data) => {      
       if (!data) {
+        console.log("not nice" + data)
         res.status(404).send({
           message: `Cannot update User with id=${id}. Maybe User was not found!`,
         });
-      } else res.send({ message: "User was updated successfully." });
+      } else
+      {
+      
+        res.send({ message: "User was updated successfully." });
+      } 
     })
     .catch((err) => {
-      res.status(500).send({
-        message: "Error updating User with id=" + id,
-      });
+     
+      
     });
 };
 

@@ -71,33 +71,33 @@ const Profile = () => {
 
   const retrieveBookRequestAmount = (bookrequest) => {
    
-    if (bookrequest.amount == 0) return "...."
+    if (bookrequest.amount == 0) return "Pending"
     else return "£" + bookrequest.amount
    
   };
 
-  const retrieveBookRequestIsPaid = (bookrequest) => {
-    console.log(bookrequest.isPaid);
+  const retrieveBookRequestIsHandled = (bookrequest) => {
+    
     const boolVal = bookrequest.isPaid;
-    if (boolVal) {
-      console.log("returning paid status");
+    if (boolVal) {      
       return (
         <FormattedMessage id="boardUser.paidStatus" defaultMessage="Complete" />
       );
     } else {
-  
+     
       return (
         <FormattedMessage
           id="boardUser.unPaidStatus"
-          defaultMessage="Pending Request"
+          defaultMessage={"Pending"}
         />
+        
       );
     }
   };
 
   const canPay = (bookrequest) => {
-    console.log(bookrequest.isPaid);
-    if (!bookrequest.isPaid) {
+    console.log(bookrequest.isHandled);
+    if (!bookrequest.isHandled) {
       return (
         <button className="btn btn-success" onClick={e => cancelRequest(bookrequest.title)}>
           <FormattedMessage id="boardUser.payButton" defaultMessage="Cancel" />
@@ -114,7 +114,7 @@ const Profile = () => {
 
   const payBookRequest = async (bookrequest) => {
     console.log(bookrequest._id);
-    bookrequest.isPaid = true;
+    bookrequest.isHandled = true;
     await BookRequestService.update(bookrequest._id, bookrequest).then((response) => {
       console.log("BookRequest has been paid");
       setContent("1");
@@ -129,7 +129,7 @@ const Profile = () => {
         <td>{retrieveBookRequestAuthor(bookrequest[1])}</td>
         <td>{retrieveBookRequestDate(bookrequest[1])}</td>
         <td>{retrieveBookRequestAmount(bookrequest[1])}</td>
-        <td>{retrieveBookRequestIsPaid(bookrequest[1])}</td>
+        <td>{retrieveBookRequestIsHandled(bookrequest[1])}</td>
         <td>{canPay(bookrequest[1])}</td>
       </tr>
     ));
@@ -141,7 +141,7 @@ const Profile = () => {
      author: inputAuthor,
      date: getFullDate(),
      amount: 0,
-     isPaid: false,
+     isHandled: false,
      user: [currentUser.id]
    }
    

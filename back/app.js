@@ -41,11 +41,7 @@ app.get("/", (req, res) => {
 // routes
 require("./routes/user.routes")(app);
 require("./routes/auth.routes")(app);
-require("./routes/bill.routes")(app);
 require("./routes/booksRequest.routes")(app);
-require("./routes/toll.routes")(app);
-require("./routes/driver.routes")(app);
-require("./routes/car.routes")(app);
 require("./routes/existingUser.routes")(app);
 
 // set port, listen for requests

@@ -10,7 +10,6 @@ import Login from "./components/Login/Login";
 import Register from "./components/Register/Register";
 import Home from "./components/Home/Home";
 import Profile from "./components/Profile/Profile";
-import BoardUser from "./components/BoardUser/BoardUser";
 import BoardEmployee from "./components/BoardEmployee/BoardEmployee";
 import BoardAdmin from "./components/BoardAdmin/BoardAdmin";
 
@@ -82,13 +81,8 @@ const App = (props) => {
             </li>
           )}
 
-          {currentUser && (
-            <li className="nav-item">
-              <Link to={"/user"} className="nav-link">
-                <FormattedMessage id="navbar.user" defaultMessage="User" />
-              </Link>
-            </li>
-          )}
+         
+          )
         </div>
 
         {currentUser ? (
@@ -126,8 +120,7 @@ const App = (props) => {
           <Route exact path={["/", "/home"]} component={Home} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Register} />
-          <Route exact path="/profile" component={Profile} />
-          <Route path="/user" component={BoardUser} />
+          <Route exact path="/profile" component={Profile} />      
           <Route path="/mod" component={BoardEmployee} />
           <Route path="/admin" component={BoardAdmin} />
         </Switch>
